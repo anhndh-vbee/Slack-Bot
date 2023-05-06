@@ -1,10 +1,25 @@
-const jwt = require('jsonwebtoken');
+const os = require('os');
 const config = require('../config/config');
 
-const generateToken = (user) => {
-    return jwt.sign({ data: user }, config.JWT_ACCESS_KEY, { expiresIn: 300 })
+const checkIP = () => {
+    const interfaces = os.networkInterfaces();
+    const addresses = [];
+    for (const iface in interfaces) {
+        for (const address of interfaces[iface]) {
+            if (address.family === 'IPv4' && !address.internal) {
+                addresses.push(address.address);
+            }
+        }
+    }
+
+    // addresses[0];
+    return (addresses[0] === config.IP)
 }
 
-const checkUrl = () => {
-
+const checkTimeCheckIn = (date) => {
+    if (date.getHours() > 9) return false;
+    if (date.getHours() === 9 && date.getMinutes() > 20) return false;
+    return true;
 }
+
+module.exports = { checkIP, checkTimeCheckIn };

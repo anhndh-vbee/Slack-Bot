@@ -9,12 +9,25 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true
     },
+    team_id: {
+        type: String,
+        require: true,
+    },
+    email: {
+        type: String,
+    },
+    isAdmin: {
+        type: Boolean
+    },
     numberOfCheckin: {
-        type: Number
+        type: Number,
+        default: 0
     },
     dateOfCheckin: {
         type: [Date]
     }
+}, {
+    timestamps: true
 })
 
 const User = mongoose.model('User', userSchema);
