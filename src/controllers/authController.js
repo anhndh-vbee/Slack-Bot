@@ -17,9 +17,14 @@ const checkIP = () => {
 }
 
 const checkTimeCheckIn = (date) => {
-    if (date.getHours() > 9) return false;
-    if (date.getHours() === 9 && date.getMinutes() > 20) return false;
+    if (date.getHours() > 21) return false;
+    if (date.getHours() === 21 && date.getMinutes() > 20) return false;
     return true;
 }
 
-module.exports = { checkIP, checkTimeCheckIn };
+const checkIPv2 = (req, res) => {
+    const userIp = req.ips;
+    return userIp[0];
+}
+
+module.exports = { checkIP, checkTimeCheckIn, checkIPv2 };

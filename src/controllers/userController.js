@@ -1,4 +1,5 @@
 const { WebClient } = require('@slack/web-api');
+const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 const User = require('../models/user');
 const authController = require('./authController');
@@ -44,28 +45,6 @@ const showListUsers = async (req, res) => {
     }
 }
 
-const generateUrl = (id) => {
-    const baseUrl = config.BASE_URL;
-    const path = '/users-checkin';
-    const query = { userId: id };
-
-    const urlObj = new URL(path, baseUrl);
-    Object.keys(query).forEach(key => urlObj.searchParams.append(key, query[key]));
-    const userUrl = urlObj.toString();
-    return userUrl
-}
-
-const checkIn = async (req, res) => {
-    const { user_id } = req.body;
-    try {
-        const userInfo = await client.users.info({ user: user_id });
-        const urlUser = generateUrl(userInfo?.user.id)
-        return res.send(urlUser)
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 const checkUserId = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -102,6 +81,29 @@ const saveUserFromSlack = async (req, res) => {
     }
 }
 
+// v1
+const generateUrl = (id) => {
+    const baseUrl = config.BASE_URL;
+    const path = '/users-checkin';
+    const query = { userId: id };
+
+    const urlObj = new URL(path, baseUrl);
+    Object.keys(query).forEach(key => urlObj.searchParams.append(key, query[key]));
+    const userUrl = urlObj.toString();
+    return userUrl
+}
+
+const checkIn = async (req, res) => {
+    const { user_id } = req.body;
+    try {
+        const userInfo = await checkUserInfo(user_id);
+        const urlUser = generateUrl(userInfo?.user.id)
+        return res.send(urlUser)
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const postCheckIn = async (req, res) => {
     try {
         const id = req.query.userId;
@@ -110,7 +112,7 @@ const postCheckIn = async (req, res) => {
         const date = new Date();
         let check = true;
 
-        if (authController.checkIP() === false || authController.checkTimeCheckIn(date) === false) {
+        if (authController.checkIPv2(req, res) !== config.IP || authController.checkTimeCheckIn(date) === false) {
             check = false;
             return res.status(200).send('Checkin failed');
         }
@@ -139,4 +141,70 @@ const postCheckIn = async (req, res) => {
     }
 }
 
-module.exports = { addUser, getUser, checkUserInfo, showListUsers, checkIn, saveUserFromSlack, postCheckIn };
+// v2
+const generateUrlWithToken = (user) => {
+    const token = jwt.sign({ data: user }, config.JWT_ACCESS_KEY, { expiresIn: 300 });
+    const baseUrl = config.BASE_URL;
+    return `${baseUrl}/users-checkinv2/${token}`;
+}
+
+const checkInV2 = async (req, res) => {
+    try {
+        const { user_id } = req.body;
+        const userData = await User.findOne({ id: user_id });
+        const url = generateUrlWithToken(userData);
+        return res.status(200).send(url);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
+const postCheckInV2 = async (req, res) => {
+    try {
+        const token = req.params.token;
+        if (token) {
+            jwt.verify(token, config.JWT_ACCESS_KEY, async (err, userData) => {
+                if (err) {
+                    return res.status(403).send('Token is invalid. Checkin failed');
+                } else {
+                    const userId = userData?.data?.id;
+                    const user = await User.findOne({ id: userId })
+                    const date = new Date();
+                    let check = true;
+
+                    if (authController.checkIPv2(req, res) !== config.IP || authController.checkTimeCheckIn(date) === false) {
+                        // console.log(authController.checkIPv2(req, res));
+                        check = false;
+                        return res.status(200).send('Checkin failed');
+                    }
+
+                    if (date.getDay() === 5) {
+                        user.numberOfCheckin = 0;
+                        user.dateOfCheckin = [];
+                    }
+
+                    (user.dateOfCheckin).forEach(dateCheckIn => {
+                        if (date.getDay() === dateCheckIn.getDay()) {
+                            check = false;
+                            return res.status(200).send('You have checked in this day')
+                        }
+                    });
+
+                    if (check === true) {
+                        user.numberOfCheckin += 1;
+                        user.dateOfCheckin.push(date);
+                        await user.save();
+                        // console.log(authController.checkIPv2(req, res));
+                        return res.status(200).send('Checkin successfully');
+                    }
+                }
+            })
+        } else {
+            return res.status(401).send('Not authenticated');
+        }
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
+
+module.exports = { addUser, getUser, checkUserInfo, showListUsers, checkIn, saveUserFromSlack, postCheckIn, checkInV2, postCheckInV2 };
