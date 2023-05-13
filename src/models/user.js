@@ -20,15 +20,17 @@ const userSchema = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
     },
-    numberOfCheckin: {
-      type: Number,
-      default: 0,
-    },
-    dateOfCheckin: {
-      type: [Date],
+    days: {
+      type: [Array],
+      default: [[new Date()]],
     },
     schedules: {
-      type: [String],
+      type: [
+        {
+          day: String,
+          time: String,
+        },
+      ],
     },
   },
   {
