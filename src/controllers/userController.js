@@ -34,8 +34,8 @@ const checkUserId = (userId) => {
 
 const saveUserFromSlack = async (req, res) => {
   try {
-    const { userInfo } = req.body;
-    // const userInfo = await checkUserInfo(user_id);
+    const { user_id } = req.body;
+    const userInfo = await checkUserInfo(user_id);
     const check = await checkUserId(userInfo?.user?.id);
     if (!check) {
       return res.send('User existed');
@@ -154,7 +154,7 @@ const index = async (req, res) => {
   const condition = req.query;
   const users = await userService.findUser(condition);
   res.status(200).send(users);
-}
+};
 
 module.exports = {
   checkUserInfo,
@@ -162,5 +162,5 @@ module.exports = {
   checkIn,
   schedule,
   postCheckIn,
-  index
+  index,
 };
