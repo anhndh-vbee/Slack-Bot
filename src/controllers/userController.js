@@ -1,9 +1,10 @@
-const { WebClient } = require("@slack/web-api");
-const jwt = require("jsonwebtoken");
-const config = require("../config/config");
-const User = require("../models/user");
-const authController = require("./authController");
-const dateService = require("../services/dateService");
+const { WebClient } = require('@slack/web-api');
+const jwt = require('jsonwebtoken');
+const config = require('../config/config');
+const User = require('../models/user');
+const authController = require('./authController');
+const dateService = require('../services/dateService');
+const userService = require('../services/user.service');
 
 const client = new WebClient(config.SLACK_TOKEN);
 
@@ -33,11 +34,11 @@ const checkUserId = (userId) => {
 
 const saveUserFromSlack = async (req, res) => {
   try {
-    const { user_id } = req.body;
-    const userInfo = await checkUserInfo(user_id);
+    const { userInfo } = req.body;
+    // const userInfo = await checkUserInfo(user_id);
     const check = await checkUserId(userInfo?.user?.id);
     if (!check) {
-      return res.send("User existed");
+      return res.send('User existed');
     }
     const newUser = new User({
       id: userInfo?.user.id,
@@ -78,7 +79,7 @@ const postCheckIn = async (req, res) => {
     if (token) {
       jwt.verify(token, config.JWT_ACCESS_KEY, async (err, userData) => {
         if (err) {
-          return res.status(403).send("Token is invalid. Checkin failed");
+          return res.status(403).send('Token is invalid. Checkin failed');
         } else {
           const userId = userData?.data?.id;
           const user = await User.findOne({ id: userId });
@@ -87,7 +88,7 @@ const postCheckIn = async (req, res) => {
 
           if (authController.checkIPv2(req, res) !== config.IP) {
             check = false;
-            return res.status(200).send("Checkin failed");
+            return res.status(200).send('Checkin failed');
           }
 
           if (check === true) {
@@ -110,14 +111,14 @@ const postCheckIn = async (req, res) => {
             }
 
             user.days = listCheckInTime;
-            user.markModified("days");
+            user.markModified('days');
             await user.save();
-            return res.status(200).send("Checkin successfully");
+            return res.status(200).send('Checkin successfully');
           }
         }
       });
     } else {
-      return res.status(401).send("Not authenticated");
+      return res.status(401).send('Not authenticated');
     }
   } catch (error) {
     return res.status(200).json(error);
@@ -128,26 +129,32 @@ const schedule = async (req, res) => {
   try {
     const { user_id, text } = req.body;
     const user = await User.findOne({ id: user_id });
-    const listDay = text.split(" ");
+    const listDay = text.split(' ');
     let scheduleDay = [];
     listDay.forEach((day) => {
       scheduleDay.push({
         day: dateService.getDayOfWeek(day[0]),
         time:
-          day[1].toLowerCase() === "s"
-            ? "Morning"
-            : day[1].toLowerCase() === "c"
-            ? "Afternoon"
-            : "Full",
+          day[1].toLowerCase() === 's'
+            ? 'Morning'
+            : day[1].toLowerCase() === 'c'
+            ? 'Afternoon'
+            : 'Full',
       });
     });
     user.schedules = scheduleDay;
     await user.save();
-    return res.send("Register successfully");
+    return res.send('Register successfully');
   } catch (error) {
     return res.status(500).json(error);
   }
 };
+
+const index = async (req, res) => {
+  const condition = req.query;
+  const users = await userService.findUser(condition);
+  res.status(200).send(users);
+}
 
 module.exports = {
   checkUserInfo,
@@ -155,4 +162,5 @@ module.exports = {
   checkIn,
   schedule,
   postCheckIn,
+  index
 };
