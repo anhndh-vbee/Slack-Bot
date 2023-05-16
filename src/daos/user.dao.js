@@ -10,9 +10,12 @@ const find = async ({
   filter = {},
   sort = { createdAt: -1 },
   startIndex = 0,
-  limit = process.env.LIMIT,
+  limit = null,
 }) => {
-  const query = User.find(filter).sort(sort).skip(startIndex).limit(limit);
+  const query = User.find(filter).sort(sort).skip(startIndex);
+  if(limit !== null){
+    query.limit(limit);
+  }
   const total = await User.countDocuments(filter);
   const data = await query.exec();
   return { total, data };

@@ -156,6 +156,12 @@ const index = async (req, res) => {
   res.status(200).send(users);
 };
 
+const infoPerMonth = async (req, res) => {
+  const condition = req.query;
+  const { month, year } = req.params;
+  const usersInfoInMonth = await userService.findUsersInfoPerMonth(month, year, condition);
+  res.status(200).send(usersInfoInMonth);
+}
 module.exports = {
   checkUserInfo,
   saveUserFromSlack,
@@ -163,4 +169,5 @@ module.exports = {
   schedule,
   postCheckIn,
   index,
+  infoPerMonth,
 };
