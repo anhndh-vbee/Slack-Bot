@@ -5,6 +5,8 @@ const User = require('../models/user');
 const authController = require('./authController');
 const dateService = require('../services/dateService');
 const userService = require('../services/user.service');
+const { excelProcessing } = require('../excel-processing');
+const { excelProcessingInfoPerMonth } = require('../excel-processing/infoPerMonth');
 
 const client = new WebClient(config.SLACK_TOKEN);
 
@@ -153,15 +155,21 @@ const schedule = async (req, res) => {
 const index = async (req, res) => {
   const condition = req.query;
   const users = await userService.findUser(condition);
-  res.status(200).send(users);
+  excelProcessing(req, res, users)
+  // res.status(200).send(users);
 };
 
 const infoPerMonth = async (req, res) => {
   const condition = req.query;
   const { month, year } = req.params;
-  const usersInfoInMonth = await userService.findUsersInfoPerMonth(month, year, condition);
-  res.status(200).send(usersInfoInMonth);
-}
+  const usersInfoInMonth = await userService.findUsersInfoPerMonth(
+    month,
+    year,
+    condition,
+  );
+  excelProcessingInfoPerMonth(req, res, usersInfoInMonth);
+  // res.status(200).send(usersInfoInMonth);
+};
 
 const destroy = async (req, res) => {
   const { userId } = req.params;
@@ -177,5 +185,5 @@ module.exports = {
   postCheckIn,
   index,
   infoPerMonth,
-  destroy
+  destroy,
 };

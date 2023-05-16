@@ -71,4 +71,4 @@ const calculatorValidCheckIn = (month, year, days, schedule) => {
   };
 };
 
-module.exports = { calculatorValidCheckIn };
+module.exports = { calculatorValidCheckIn, getDaysInMonth };
