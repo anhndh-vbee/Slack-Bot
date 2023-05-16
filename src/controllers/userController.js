@@ -162,6 +162,13 @@ const infoPerMonth = async (req, res) => {
   const usersInfoInMonth = await userService.findUsersInfoPerMonth(month, year, condition);
   res.status(200).send(usersInfoInMonth);
 }
+
+const destroy = async (req, res) => {
+  const { userId } = req.params;
+  const user = await userService.destroyUser(userId);
+  res.status(200).send(user);
+};
+
 module.exports = {
   checkUserInfo,
   saveUserFromSlack,
@@ -170,4 +177,5 @@ module.exports = {
   postCheckIn,
   index,
   infoPerMonth,
+  destroy
 };
