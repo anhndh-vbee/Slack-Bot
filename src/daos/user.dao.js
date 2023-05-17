@@ -23,6 +23,18 @@ const find = async ({
 };
 
 /**
+ * Show detail of User
+ * @param {ObjectId|Object} condition - User Id or User object fields
+ * @returns {User|null} - Found User or null if not found
+ */
+const show = async (condition) => {
+  if (ObjectId.isValid(condition)) return await User.findById(condition);
+  if (typeof condition === 'object' && condition !== undefined)
+    return await User.findOne(condition);
+  return null;
+};
+
+/**
  * Delete founded User
  * @param {ObjectId} _id - User Id
  * @returns {ObjectId|null} - Deleted User or null if User not found
@@ -31,4 +43,5 @@ const destroy = async (_id) => {
   if (!ObjectId.isValid(_id)) throw new CustomError(errorCodes.BAD_REQUEST);
   return await User.findByIdAndDelete(_id);
 };
-module.exports = { find, destroy };
+
+module.exports = { find, show, destroy };
