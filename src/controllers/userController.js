@@ -44,7 +44,7 @@ const saveUserFromSlack = async (req, res) => {
       id: userInfo?.user.id,
       team_id: userInfo?.user.team_id,
       name: userInfo?.user.real_name,
-      isAdmin: userInfo?.user.is_admin,
+      role: userInfo?.user.is_admin === true ? 'Admin' : 'User',
       email: userInfo?.user?.profile.email,
     });
     const saveUser = await newUser.save();
@@ -87,6 +87,7 @@ const postCheckIn = async (req, res) => {
           let check = true;
 
           if (authController.checkIPv2(req, res) !== config.IP) {
+            console.log(authController.checkIPv2(req, res));
             check = false;
             return res.status(200).send('Checkin failed');
           }
@@ -113,7 +114,25 @@ const postCheckIn = async (req, res) => {
             user.days = listCheckInTime;
             user.markModified('days');
             await user.save();
-            return res.status(200).send('Checkin successfully');
+            const informCheckin = user.days;
+            let showInform = [];
+            informCheckin.forEach((day) => {
+              const timeCheckin = day[0];
+              const indexTimeCheckout = day.length - 1;
+              showInform.push({
+                day: `${timeCheckin.getDate()}-${
+                  timeCheckin.getMonth() + 1
+                }-${timeCheckin.getFullYear()}`,
+                checkin: `${timeCheckin.getHours()}:${timeCheckin.getMinutes()}:${timeCheckin.getSeconds()}`,
+                checkout: `${day[indexTimeCheckout].getHours()}:${day[
+                  indexTimeCheckout
+                ].getMinutes()}:${day[indexTimeCheckout].getSeconds()}`,
+              });
+            });
+
+            return res
+              .status(200)
+              .send(`Check in successfully\n ${JSON.stringify(showInform)}`);
           }
         }
       });

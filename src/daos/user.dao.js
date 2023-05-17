@@ -18,4 +18,8 @@ const find = async ({
   return { total, data };
 };
 
-module.exports = { find };
+const update = async () => {
+  await User.updateMany({}, { $set: { days: [] } });
+};
+
+module.exports = { find, update };
