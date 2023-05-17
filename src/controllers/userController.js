@@ -155,20 +155,20 @@ const schedule = async (req, res) => {
 const index = async (req, res) => {
   const condition = req.query;
   const users = await userService.findUser(condition);
-  scheduleExcelResponse(req, res, users.users.data)
-  // res.status(200).send(users);
+  const resData = await scheduleExcelResponse(req, res, users.users.data)
+  res.status(200).send(resData);
 };
 
 const infoPerMonth = async (req, res) => {
   const condition = req.query;
-  const { month, year } = req.params;
+  const { month, year } = req.body;
   const usersInfoInMonth = await userService.findUsersInfoPerMonth(
     month,
     year,
     condition,
   );
-  timekeepingExcelResponse(req, res, usersInfoInMonth.users.data);
-  // res.status(200).send(usersInfoInMonth);
+  const resData = await timekeepingExcelResponse(req, res, usersInfoInMonth.users.data);
+  res.status(200).send(resData);
 };
 
 const destroy = async (req, res) => {

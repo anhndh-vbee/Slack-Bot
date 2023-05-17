@@ -2,6 +2,10 @@ const ExcelJS = require('exceljs');
 const stream = require('stream');
 const { convertedScheduleCode } = require('../utils/convertSchedule');
 const schedule = require('../config/schedule');
+const publicDirecPath = require('../config/publicDirecPath');
+const fs = require('fs');
+const CustomError = require('../errors/CustomError');
+const errorCodes = require('../errors/code');
 
 const createHeaderRow = (worksheet) => {
   // add header row
@@ -72,7 +76,7 @@ const styleSheet = (row, rowNumber) => {
   row.commit();
 };
 
-const scheduleExcelResponse = (req, res, data) => {
+const scheduleExcelResponse = async (req, res, data) => {
   // initialize excel file
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Schedule');
@@ -81,16 +85,40 @@ const scheduleExcelResponse = (req, res, data) => {
   addDataRows(worksheet, data);
   worksheet.eachRow(styleSheet);
 
-  // Stream Excel file to client
-  const streamBuffer = new stream.PassThrough();
-  workbook.xlsx.write(streamBuffer).then(() => {
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    );
-    res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
-    streamBuffer.pipe(res);
-  });
+  // // Stream Excel file to client
+  // const streamBuffer = new stream.PassThrough();
+  // workbook.xlsx.write(streamBuffer).then(() => {
+  //   res.setHeader(
+  //     'Content-Type',
+  //     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  //   );
+  //   res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
+  //   streamBuffer.pipe(res);
+  // });
+
+  // tạo file
+  // Lấy thời gian hiện tại để làm phần của tên file
+  const timestamp = Date.now();
+  // Tạo số ngẫu nhiên để khỏi bị trùng tên file
+  const randomNumber = Math.floor(Math.random() * 1000);
+  // Ghép các giá trị lại với nhau để tạo tên file
+  const fileName = `${timestamp}-${randomNumber}.xlsx`;
+  const filePath = publicDirecPath + '/' + fileName;
+  try {
+    await workbook.xlsx.writeFile(filePath);
+    const downloadUrl = `${req.protocol}://${req.get(
+      'host',
+    )}/download/${fileName}`;
+    // sau 5 phút sẽ xóa file
+    setTimeout(() => {
+      fs.unlink(filePath, (error) => {
+        console.log(error);
+      });
+    }, 5 * 1000);
+    return { downloadUrl, message: 'url sau 5 phút sẽ hết hạn' };
+  } catch (error) {
+    throw new CustomError(errorCodes.INTERNAL_SERVER_ERROR);
+  }
 };
 
 module.exports = { scheduleExcelResponse };

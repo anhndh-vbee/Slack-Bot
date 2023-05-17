@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(router);
 
 // error handler
-app.use(errorHandler);
+// app.use(errorHandler);
 
 app.set('trust proxy', true)
 
