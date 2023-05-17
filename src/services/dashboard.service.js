@@ -1,5 +1,7 @@
 const userDao = require('../daos/user.dao');
-const { inValidChechInDashboard } = require('../utils/inValidChechInDashboard');
+const {
+  handlerLateDashboardData,
+} = require('../data-handler/handlerLateDashboardData');
 
 const lateCheckIn = async (conditions) => {
   const { startTime, endTime, detail } = conditions;
@@ -15,7 +17,7 @@ const lateCheckIn = async (conditions) => {
     days = [...elementDays, ...days];
   });
 
-  const late = inValidChechInDashboard(detail, days);
+  const late = handlerLateDashboardData(detail, days);
   const invalidCheckInTotal = late.reduce(
     (accumulator, currentValue) => accumulator + currentValue.count,
     0,

@@ -5,8 +5,8 @@ const User = require('../models/user');
 const authController = require('./authController');
 const dateService = require('../services/dateService');
 const userService = require('../services/user.service');
-const { excelProcessing } = require('../excel-processing');
-const { excelTimekeeping } = require('../excel-processing/excelTimekeeping');
+const { scheduleExcelResponse } = require('../excel-processing/schedule.excel');
+const { timekeepingExcelResponse } = require('../excel-processing/timekeeping.excel');
 
 const client = new WebClient(config.SLACK_TOKEN);
 
@@ -155,7 +155,7 @@ const schedule = async (req, res) => {
 const index = async (req, res) => {
   const condition = req.query;
   const users = await userService.findUser(condition);
-  excelProcessing(req, res, users)
+  scheduleExcelResponse(req, res, users.users.data)
   // res.status(200).send(users);
 };
 
@@ -167,7 +167,7 @@ const infoPerMonth = async (req, res) => {
     year,
     condition,
   );
-  excelTimekeeping(req, res, usersInfoInMonth.users.data);
+  timekeepingExcelResponse(req, res, usersInfoInMonth.users.data);
   // res.status(200).send(usersInfoInMonth);
 };
 

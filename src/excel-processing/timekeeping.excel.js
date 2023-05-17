@@ -1,23 +1,10 @@
 const ExcelJS = require('exceljs');
 const stream = require('stream');
-const { getDaysInMonth } = require('../utils/calculatorValidCheckIn');
+const { getDaysInMonth } = require('../utils/getDayInMonth');
 const { convertObjectToArray } = require('../utils/convertObjectToArray');
-const excelTimekeeping = (req, res, data) => {
-  const dayOfWeekNames = [
-    'sunday',
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
-  ];
-  const dayInMonth = getDaysInMonth(
-    parseInt(req.params.month) - 1,
-    parseInt(req.params.year),
-  );
-  const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('ChamCong');
+const { getDayOfWeekName } = require('../utils/getDayOfWeekName');
+
+const createHeaderRow = (worksheet, dayInMonth) => {
   // Tạo header cho file Excel
   worksheet.mergeCells('A1:B2'); // Gộp hai ô đầu tiên
   worksheet.getCell('A1').value = `Tháng ${
@@ -40,6 +27,7 @@ const excelTimekeeping = (req, res, data) => {
   worksheet.getColumn('B').width = 30;
   let i = 1;
   for (; i <= dayInMonth.length; i++) {
+    const currentDay = dayInMonth[i - 1];
     const columnName1 = worksheet.getColumn(i * 2 + 1).letter; // Lấy tên cột bằng số thứ tự của cột
     const cellAddress1 = columnName1 + '2'; // Địa chỉ ô cần gán giá trị
 
@@ -47,14 +35,14 @@ const excelTimekeeping = (req, res, data) => {
     const cellAddress2 = columnName2 + '2'; // Địa chỉ ô cần gán giá trị
 
     worksheet.mergeCells(`${cellAddress1}:${cellAddress2}`); // Gộp hai ô
-    worksheet.getCell(cellAddress1).value = `${dayInMonth[i - 1].getDate()}`; // Header cấp 3 - Ngày trong tháng
+    worksheet.getCell(cellAddress1).value = `${currentDay.getDate()}`; // Header cấp 3 - Ngày trong tháng
     worksheet.getCell(cellAddress1).alignment = { horizontal: 'center' }; // Căn giữa header
 
     // set day of week header column
     worksheet.mergeCells(`${columnName1 + '3'}:${columnName2 + '3'}`); // Gộp hai ô
-    worksheet.getCell(`${columnName1 + '3'}`).value = `${
-      dayOfWeekNames[dayInMonth[i - 1].getDay()]
-    }`;
+    worksheet.getCell(`${columnName1 + '3'}`).value = `${getDayOfWeekName(
+      currentDay,
+    )}`;
     worksheet.getCell(`${columnName1 + '3'}`).alignment = {
       horizontal: 'center',
     }; // Căn giữa header
@@ -62,7 +50,9 @@ const excelTimekeeping = (req, res, data) => {
     worksheet.getCell(columnName1 + '4').value = 'check in';
     worksheet.getCell(columnName2 + '4').value = 'checkout';
   }
-  i*=2;
+
+  // lấy chỉ số của header hiện tại
+  i *= 2;
   [
     'Tổng số buối lên công ty',
     'Số buối check in hợp lệ',
@@ -76,12 +66,20 @@ const excelTimekeeping = (req, res, data) => {
     worksheet.getCell(columnName + '1').value = element; // Header cấp 3 - Ngày trong tháng
     worksheet.getColumn(columnName).width = 30;
   });
+};
 
-  // Add data rows
-  data.forEach((item) => {
-    const arrayItem = convertObjectToArray(item);
-    worksheet.addRow(arrayItem);
-  });
+const addDataRows = (worksheet, data) => {
+  data.forEach((item) => worksheet.addRow(convertObjectToArray(item)));
+};
+
+const timekeepingExcelResponse = (req, res, data) => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('ChamCong');
+  const dayInMonth = getDaysInMonth(req.params);
+
+  createHeaderRow(worksheet, dayInMonth);
+  addDataRows(worksheet, data);
+
   // Stream Excel file to client
   const streamBuffer = new stream.PassThrough();
   workbook.xlsx.write(streamBuffer).then(() => {
@@ -94,4 +92,4 @@ const excelTimekeeping = (req, res, data) => {
   });
 };
 
-module.exports = { excelTimekeeping };
+module.exports = { timekeepingExcelResponse };

@@ -1,6 +1,6 @@
-const { isValidCheckIn } = require('./isValidCheckIn');
+const { isValidCheckIn } = require('../utils/isValidCheckIn');
 
-const inValidChechInDashboard = (detail, days) => {
+const handlerLateDashboardData = (detail, days) => {
   // days = [[time, time], [time, time], ]
   let result = [];
   days.forEach((element) => {
@@ -33,4 +33,4 @@ const inValidChechInDashboard = (detail, days) => {
   return result;
 };
 
-module.exports = { inValidChechInDashboard };
+module.exports = { handlerLateDashboardData };

@@ -1,6 +1,6 @@
 const convertFilterToRegex = require('../utils/convertFilterToRegex');
 const userDao = require('../daos/user.dao');
-const { calculatorValidCheckIn } = require('../utils/calculatorValidCheckIn');
+const { handlerTimekeepingData } = require('../data-handler/handlerTimekeepingData');
 
 const findUser = async (conditions) => {
   const {
@@ -46,7 +46,7 @@ const findUsersInfoPerMonth = async (month, year, conditions) => {
   users.data = users.data.map((element) => {
     // tính toán các thông tin như số thời gian lên cty,
     //các buồi chẹckin hợp lệ, tống số buối phải lên cty như đã đăng ký
-    const checkInCheckOutInMonth = calculatorValidCheckIn(
+    const checkInCheckOutInMonth = handlerTimekeepingData(
       month,
       year,
       element.days,
