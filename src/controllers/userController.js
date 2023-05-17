@@ -6,7 +6,7 @@ const authController = require('./authController');
 const dateService = require('../services/dateService');
 const userService = require('../services/user.service');
 const { excelProcessing } = require('../excel-processing');
-const { excelProcessingInfoPerMonth } = require('../excel-processing/infoPerMonth');
+const { excelTimekeeping } = require('../excel-processing/excelTimekeeping');
 
 const client = new WebClient(config.SLACK_TOKEN);
 
@@ -167,7 +167,7 @@ const infoPerMonth = async (req, res) => {
     year,
     condition,
   );
-  excelProcessingInfoPerMonth(req, res, usersInfoInMonth);
+  excelTimekeeping(req, res, usersInfoInMonth.users.data);
   // res.status(200).send(usersInfoInMonth);
 };
 

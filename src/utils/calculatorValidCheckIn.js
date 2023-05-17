@@ -1,3 +1,4 @@
+const { convertObjectToArray } = require('./convertObjectToArray');
 const { isValidCheckIn } = require('./isValidCheckIn');
 
 const getDaysInMonth = (month, year) => {
@@ -29,13 +30,16 @@ const calculatorValidCheckIn = (month, year, days, schedule) => {
   var schedCheckins = 0;
   // kiểm tra tháng đó có tổng bao nhiêu buổi lên công ty
   const dayInMonth = getDaysInMonth(parseInt(month) - 1, parseInt(year));
-  const totalMonthlyVisits = dayInMonth.reduce((total, element) => {
+  var totalMonthlyVisits = 0;
+  var checkInCheckOutInMonth = dayInMonth.map((element) => {
     const day = dayOfWeekNames[element.getDay()];
     if (schedule.some((scheduleElement) => scheduleElement.day === day)) {
-      return ++total;
+      ++totalMonthlyVisits;
     }
-    return total;
-  }, 0);
+    return {
+      [element.getDate()]: { checkIn: '0:0', checkOut: '0:0' },
+    };
+  });
   days.forEach((element) => {
     if (
       element[0].getMonth() + 1 === parseInt(month) &&
@@ -46,15 +50,20 @@ const calculatorValidCheckIn = (month, year, days, schedule) => {
       const checkOutTime = element[element.length - 1];
       const day = dayOfWeekNames[checkInTime.getDay()];
       const { isValid, time } = isValidCheckIn(checkInTime, checkOutTime);
-
-      //check in valid in company
-      isValid && numberValidCheckIn++;
-      // total time in company
-      isValid &&
-        (totalTime += ((checkOutTime - checkInTime) / (1000 * 60 * 60)).toFixed(
-          2,
-        ));
-
+      const date = checkInTime.getDate();
+      if (isValid) {
+        //check in valid in company
+        numberValidCheckIn++;
+        // total time in company
+        totalTime += Math.round((checkOutTime - checkInTime) / (60 * 60 * 10))/100;
+      }
+      var currentDay = checkInCheckOutInMonth.find((obj) =>
+        obj.hasOwnProperty(date),
+      );
+      currentDay[date] = {
+        checkIn: checkInTime.getUTCHours() + ':' + checkInTime.getMinutes(),
+        checkOut: checkOutTime.getUTCHours() + ':' + checkOutTime.getMinutes(),
+      };
       // check in valid by schedule
       if (
         schedule.some((element) => element.time === time && element.day === day)
@@ -63,6 +72,7 @@ const calculatorValidCheckIn = (month, year, days, schedule) => {
     }
   });
   return {
+    checkInCheckOutInMonth,
     upTheCompanyCount,
     numberValidCheckIn,
     totalTime,

@@ -46,13 +46,13 @@ const findUsersInfoPerMonth = async (month, year, conditions) => {
   users.data = users.data.map((element) => {
     // tính toán các thông tin như số thời gian lên cty,
     //các buồi chẹckin hợp lệ, tống số buối phải lên cty như đã đăng ký
-    const checkInInfo = calculatorValidCheckIn(
+    const checkInCheckOutInMonth = calculatorValidCheckIn(
       month,
       year,
       element.days,
       element.schedules,
     );
-    return { ...checkInInfo, user: element };
+    return { id: element.id, email: element.email, ...checkInCheckOutInMonth };
   });
   return { users, conditions: { sort, page, limit, filter: prefilter } };
 };
