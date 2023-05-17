@@ -44,7 +44,7 @@ const saveUserFromSlack = async (req, res) => {
       id: userInfo?.user.id,
       team_id: userInfo?.user.team_id,
       name: userInfo?.user.real_name,
-      isAdmin: userInfo?.user.is_admin,
+      role: userInfo?.user.is_admin === true ? 'Admin' : 'User',
       email: userInfo?.user?.profile.email,
     });
     const saveUser = await newUser.save();

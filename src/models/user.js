@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
   {
@@ -10,15 +10,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    team_id: {
-      type: String,
-      require: true,
-    },
     email: {
       type: String,
     },
-    isAdmin: {
-      type: Boolean,
+    role: {
+      type: String,
     },
     days: {
       type: [Array],
@@ -35,9 +31,9 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
