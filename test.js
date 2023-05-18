@@ -1,28 +1,18 @@
-// get week of date
-function getWeek(date) {
-  const weekStart = new Date(date.getFullYear(), 0, 1);
-  const diff = date.getTime() - weekStart.getTime();
-  return Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
-}
+const os = require('os');
 
-const date = new Date();
-console.log(getWeek(date));
-// const cron = require('cron');
-// const cronJob = new cron.CronJob('0 9 1-7 Jan *', () => {
-//   const currentDate = new Date();
-//   const firstDayOfMonth = new Date(
-//     currentDate.getFullYear(),
-//     currentDate.getMonth(),
-//     2,
-//   );
-//   const firstSundayOfMonth =
-//     firstDayOfMonth.getDate() + (7 - firstDayOfMonth.getDay());
-//   if (
-//     currentDate.getMonth() === 0 &&
-//     currentDate.getDate() === firstSundayOfMonth
-//   ) {
-//     console.log(1);
-//   }
-// });
+const checkIP = () => {
+  const interfaces = os.networkInterfaces();
+  const addresses = [];
+  for (const iface in interfaces) {
+    for (const address of interfaces[iface]) {
+      if (address.family === 'IPv4' && !address.internal) {
+        addresses.push(address.address);
+      }
+    }
+  }
 
-// cronJob.start();
+  // addresses[0];
+  return addresses[0];
+};
+
+console.log(checkIP());
