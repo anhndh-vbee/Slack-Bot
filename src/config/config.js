@@ -7,7 +7,8 @@ const config = {
     JWT_ACCESS_KEY: process.env.JWT_ACCESS_KEY,
     SLACK_TOKEN: process.env.SLACK_TOKEN,
     BASE_URL: process.env.BASE_URL,
-    IP: process.env.IP
+    IP: process.env.IP,
+    URL_EXPRIDE_TIME: 1000*5,
 }
 
 module.exports = config;
