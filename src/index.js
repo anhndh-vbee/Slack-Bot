@@ -25,6 +25,6 @@ app.set('trust proxy', true);
 
 connectDB();
 
-app.listen(port, hostName, () => {
-  console.log(`Server is running at ${hostName}:${port}`);
+app.listen(port, () => {
+  console.log(`Server is running at ${port}`);
 });

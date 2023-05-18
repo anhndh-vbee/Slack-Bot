@@ -1,27 +1,28 @@
-version: "1"
+version: "3"
 
 services:
   nodejs-app:
     build:
-      context: ./nodedocker_app
+      context: ./Slack-Bot
     container_name: slackcheckin
     hostname: slackcheckin
     ports:
-      - "8086:8086"
+      - "3001:8086"
     networks:
       - example-net
-
     depends_on:
       - mongo
+      
   mongo:
     container_name: mongo
     image: mongo
     volumes:
-      - ./data:/data/db
+      - mongodb:/data/db
     ports:
       - "27017:27017"
     networks:
       - example-net
+      
   nginx:
     build:
       context: ./nginx
@@ -33,6 +34,9 @@ services:
       - nodejs-app
     networks:
       - example-net
+
+volumes:
+  mongodb:
 
 networks:
   example-net:
