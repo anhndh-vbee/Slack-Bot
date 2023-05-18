@@ -6,7 +6,9 @@ const authController = require('./authController');
 const dateService = require('../services/dateService');
 const userService = require('../services/user.service');
 const { scheduleExcelResponse } = require('../excel-processing/schedule.excel');
-const { timekeepingExcelResponse } = require('../excel-processing/timekeeping.excel');
+const {
+  timekeepingExcelResponse,
+} = require('../excel-processing/timekeeping.excel');
 
 const client = new WebClient(config.SLACK_TOKEN);
 
@@ -46,7 +48,7 @@ const saveUserFromSlack = async (req, res) => {
       id: userInfo?.user.id,
       team_id: userInfo?.user.team_id,
       name: userInfo?.user.real_name,
-      isAdmin: userInfo?.user.is_admin,
+      role: userInfo?.user.is_admin === true ? 'Admin' : 'User',
       email: userInfo?.user?.profile.email,
     });
     const saveUser = await newUser.save();
@@ -87,7 +89,7 @@ const postCheckIn = async (req, res) => {
           const user = await User.findOne({ id: userId });
           const date = new Date();
           let check = true;
-
+          // console.log(authController.checkIPv2(req, res));
           if (authController.checkIPv2(req, res) !== config.IP) {
             check = false;
             return res.status(200).send('Checkin failed');
@@ -115,7 +117,44 @@ const postCheckIn = async (req, res) => {
             user.days = listCheckInTime;
             user.markModified('days');
             await user.save();
-            return res.status(200).send('Checkin successfully');
+            let informCheckin = user.days;
+            const len = informCheckin.length;
+            let dayCheckinOfMonth = informCheckin.filter(
+              (day) =>
+                dateService.getWeek(day[0]) ===
+                dateService.getWeek(informCheckin[len - 1][0]),
+            );
+
+            let contentCheckinThisMonth = `
+              <h3>List check in this month</h3>
+            `;
+
+            dayCheckinOfMonth.forEach((day) => {
+              const timeCheckin = day[0];
+              const indexTimeCheckout = day.length - 1;
+
+              contentCheckinThisMonth += `
+              <br/>
+              <tr>
+                <td>${timeCheckin.getDate()}-${
+                timeCheckin.getMonth() + 1
+              }-${timeCheckin.getFullYear()}</td>
+                <td>${timeCheckin.getHours()}:${timeCheckin.getMinutes()}:${timeCheckin.getSeconds()}</td>
+                <td>${day[indexTimeCheckout].getHours()}:${day[
+                indexTimeCheckout
+              ].getMinutes()}:${day[indexTimeCheckout].getSeconds()}</td>
+              </tr>
+              <br/>
+              `;
+            });
+
+            return res
+              .status(200)
+              .send(`Check in successfully\n ${contentCheckinThisMonth}`);
+
+            // return res
+            //   .status(200)
+            //   .send(`Check in successfully\n ${JSON.stringify(showInform)}`);
           }
         }
       });
@@ -155,7 +194,7 @@ const schedule = async (req, res) => {
 const index = async (req, res) => {
   const condition = req.query;
   const users = await userService.findUser(condition);
-  const resData = await scheduleExcelResponse(req, res, users.users.data)
+  const resData = await scheduleExcelResponse(req, res, users.users.data);
   res.status(200).send(resData);
 };
 
@@ -167,7 +206,11 @@ const infoPerMonth = async (req, res) => {
     year,
     condition,
   );
-  const resData = await timekeepingExcelResponse(req, res, usersInfoInMonth.users.data);
+  const resData = await timekeepingExcelResponse(
+    req,
+    res,
+    usersInfoInMonth.users.data,
+  );
   res.status(200).send(resData);
 };
 

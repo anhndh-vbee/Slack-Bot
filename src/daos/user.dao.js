@@ -44,4 +44,13 @@ const destroy = async (_id) => {
   return await User.findByIdAndDelete(_id);
 };
 
-module.exports = { find, show, destroy };
+const update = async () => {
+  await User.updateMany({}, { $set: { days: [] } });
+};
+
+const findAll = async () => {
+  const listEmail = await User.find();
+  return listEmail;
+};
+
+module.exports = { find, update, show, destroy, findAll };
