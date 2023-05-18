@@ -7,6 +7,7 @@ const errorHandler = require('./middlewares/errorHandler.middleware');
 const port = config.PORT || 8088;
 const hostName = config.HOST_NAME;
 const path = require('path');
+require('./services/refreshCheckin');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -19,10 +20,10 @@ app.use(router);
 // error handler
 // app.use(errorHandler);
 
-app.set('trust proxy', true)
+app.set('trust proxy', true);
 
 connectDB();
 
 app.listen(port, hostName, () => {
-    console.log(`Server is running at ${hostName}:${port}`);
-})
+  console.log(`Server is running at ${hostName}:${port}`);
+});

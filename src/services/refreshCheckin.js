@@ -1,11 +1,6 @@
-// get week of date
-function getWeek(date) {
-  const weekStart = new Date(date.getFullYear(), 0, 1);
-  const diff = date.getTime() - weekStart.getTime();
-  return Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
-}
-
 const cron = require('cron');
+const { update } = require('../daos/user.dao');
+
 const cronJob = new cron.CronJob('0 9 1-7 Jan *', () => {
   const currentDate = new Date();
   const firstDayOfMonth = new Date(
@@ -19,7 +14,7 @@ const cronJob = new cron.CronJob('0 9 1-7 Jan *', () => {
     currentDate.getMonth() === 0 &&
     currentDate.getDate() === firstSundayOfMonth
   ) {
-    console.log(1);
+    update();
   }
 });
 
