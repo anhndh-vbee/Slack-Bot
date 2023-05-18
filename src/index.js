@@ -6,15 +6,19 @@ const app = express();
 const errorHandler = require('./middlewares/errorHandler.middleware');
 const port = config.PORT || 8088;
 const hostName = config.HOST_NAME;
+const path = require('path');
 require('./services/refreshCheckin');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// static file
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
 app.use(router);
 
 // error handler
-app.use(errorHandler);
+// app.use(errorHandler);
 
 app.set('trust proxy', true);
 

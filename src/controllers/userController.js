@@ -5,6 +5,8 @@ const User = require('../models/user');
 const authController = require('./authController');
 const dateService = require('../services/dateService');
 const userService = require('../services/user.service');
+const { scheduleExcelResponse } = require('../excel-processing/schedule.excel');
+const { timekeepingExcelResponse } = require('../excel-processing/timekeeping.excel');
 
 const client = new WebClient(config.SLACK_TOKEN);
 
@@ -172,7 +174,26 @@ const schedule = async (req, res) => {
 const index = async (req, res) => {
   const condition = req.query;
   const users = await userService.findUser(condition);
-  res.status(200).send(users);
+  const resData = await scheduleExcelResponse(req, res, users.users.data)
+  res.status(200).send(resData);
+};
+
+const infoPerMonth = async (req, res) => {
+  const condition = req.query;
+  const { month, year } = req.body;
+  const usersInfoInMonth = await userService.findUsersInfoPerMonth(
+    month,
+    year,
+    condition,
+  );
+  const resData = await timekeepingExcelResponse(req, res, usersInfoInMonth.users.data);
+  res.status(200).send(resData);
+};
+
+const destroy = async (req, res) => {
+  const { userId } = req.params;
+  const user = await userService.destroyUser(userId);
+  res.status(200).send(user);
 };
 
 module.exports = {
@@ -182,4 +203,6 @@ module.exports = {
   schedule,
   postCheckIn,
   index,
+  infoPerMonth,
+  destroy,
 };
