@@ -8,6 +8,7 @@ const port = config.PORT || 8088;
 const hostName = config.HOST_NAME;
 const path = require('path');
 require('./services/refreshCheckin');
+require('./services/emailService');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
