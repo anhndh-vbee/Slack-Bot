@@ -48,4 +48,9 @@ const update = async () => {
   await User.updateMany({}, { $set: { days: [] } });
 };
 
-module.exports = { find, update, show, destroy };
+const findAll = async () => {
+  const listEmail = await User.find();
+  return listEmail;
+};
+
+module.exports = { find, update, show, destroy, findAll };

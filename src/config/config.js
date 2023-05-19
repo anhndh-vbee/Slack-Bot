@@ -8,6 +8,8 @@ const config = {
   SLACK_TOKEN: process.env.SLACK_TOKEN,
   BASE_URL: process.env.BASE_URL,
   IP: process.env.IP,
+  EMAIL: process.env.EMAIL,
+  PASS_EMAIL: process.env.PASS_EMAIL,
 };
 
 module.exports = config;
