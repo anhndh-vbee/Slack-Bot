@@ -51,6 +51,15 @@ const saveUserFromSlack = async (req, res) => {
       role: userInfo?.user.is_admin === true ? 'Admin' : 'User',
       email: userInfo?.user?.profile.email,
     });
+    // const saveUser = await newUser.save();
+
+    const chatAnnouce = await client.chat.postMessage({
+      channel: config.CHANNEL_ID,
+      text: `<@${config.ADMIN_ID}> List checkin of ${newUser.name}`,
+    });
+
+    const { ts } = chatAnnouce;
+    newUser.thread = ts;
     const saveUser = await newUser.save();
     return res.status(200).json(saveUser);
   } catch (error) {
@@ -89,7 +98,7 @@ const postCheckIn = async (req, res) => {
           const user = await User.findOne({ id: userId });
           const date = new Date();
           let check = true;
-          // console.log(authController.checkIPv2(req, res));
+          console.log(authController.checkIPv2(req, res));
           if (authController.checkIPv2(req, res) !== config.IP) {
             check = false;
             return res.status(200).send('Checkin failed');
@@ -148,13 +157,15 @@ const postCheckIn = async (req, res) => {
               `;
             });
 
+            await client.chat.postMessage({
+              channel: config.CHANNEL_ID,
+              text: `<@${config.ADMIN_ID}> User ${user.name} has checked in`,
+              thread_ts: user.thread,
+            });
+
             return res
               .status(200)
               .send(`Check in successfully\n ${contentCheckinThisMonth}`);
-
-            // return res
-            //   .status(200)
-            //   .send(`Check in successfully\n ${JSON.stringify(showInform)}`);
           }
         }
       });
