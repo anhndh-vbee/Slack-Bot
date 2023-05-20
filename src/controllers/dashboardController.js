@@ -1,4 +1,3 @@
-const config = require('../config/config');
 const dashboardService = require('../services/dashboard.service');
 
 const lateCheckIn = async (req, res) => {

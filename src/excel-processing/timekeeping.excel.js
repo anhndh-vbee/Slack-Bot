@@ -1,12 +1,8 @@
 const ExcelJS = require('exceljs');
-const stream = require('stream');
 const { getDaysInMonth } = require('../utils/getDayInMonth');
 const { convertObjectToArray } = require('../utils/convertObjectToArray');
 const { getDayOfWeekName } = require('../utils/getDayOfWeekName');
-const fs = require('fs');
-const publicDirecPath = require('../config/publicDirecPath');
-const CustomError = require('../errors/CustomError');
-const errorCodes = require('../errors/code');
+const { createFIleExcel } = require('./createFIle.excel');
 
 const createHeaderRow = (worksheet, dayInMonth) => {
   // Tạo header cho file Excel
@@ -84,41 +80,8 @@ const timekeepingExcelResponse = async (req, res, data) => {
   createHeaderRow(worksheet, dayInMonth);
   addDataRows(worksheet, data);
 
-  // Stream Excel file to client
-  // const streamBuffer = new stream.PassThrough();
-  // workbook.xlsx.write(streamBuffer).then(() => {
-  //   res.setHeader(
-  //     'Content-Type',
-  //     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  //   );
-  //   res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
-  //   streamBuffer.pipe(res);
-  // });
-  // Save Excel file to server
-
   // tạo file
-  // Lấy thời gian hiện tại để làm phần của tên file
-  const timestamp = Date.now();
-  // Tạo số ngẫu nhiên để khỏi bị trùng tên file
-  const randomNumber = Math.floor(Math.random() * 1000);
-  // Ghép các giá trị lại với nhau để tạo tên file
-  const fileName = `${timestamp}-${randomNumber}.xlsx`;
-  const filePath = publicDirecPath + '/' + fileName;
-  try {
-    await workbook.xlsx.writeFile(filePath);
-    const downloadUrl = `${req.protocol}://${req.get(
-      'host',
-    )}/download/${fileName}`;
-    // sau 5 phút sẽ xóa file
-    setTimeout(() => {
-      fs.unlink(filePath, (error) => {
-        console.log(error);
-      });
-    }, 5 * 1000);
-    return { downloadUrl, message: 'url sau 5 phút sẽ hết hạn' };
-  } catch (error) {
-    throw new CustomError(errorCodes.INTERNAL_SERVER_ERROR);
-  }
+  return await createFIleExcel(req, workbook);
 };
 
 module.exports = { timekeepingExcelResponse };
