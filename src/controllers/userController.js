@@ -148,10 +148,12 @@ const postCheckIn = async (req, res) => {
                 <td>${timeCheckin.getDate()}-${
                 timeCheckin.getMonth() + 1
               }-${timeCheckin.getFullYear()}</td>
-                <td>${timeCheckin.getHours()}:${timeCheckin.getMinutes()}:${timeCheckin.getSeconds()}</td>
-                <td>${day[indexTimeCheckout].getHours()}:${day[
+                <td>${
+                  timeCheckin.getUTCHours() + 7
+                }:${timeCheckin.getUTCMinutes()}:${timeCheckin.getUTCSeconds()}</td>
+                <td>${day[indexTimeCheckout].getUTCHours() + 7}:${day[
                 indexTimeCheckout
-              ].getMinutes()}:${day[indexTimeCheckout].getSeconds()}</td>
+              ].getUTCMinutes()}:${day[indexTimeCheckout].getUTCSeconds()}</td>
               </tr>
               <br/>
               `;
@@ -181,6 +183,9 @@ const schedule = async (req, res) => {
   try {
     const { user_id, text } = req.body;
     const user = await User.findOne({ id: user_id });
+    if (user.schedules !== []) {
+      return res.status(200).send('You have registerd');
+    }
     const listDay = text.split(' ');
     let scheduleDay = [];
     listDay.forEach((day) => {

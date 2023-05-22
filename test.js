@@ -1,18 +1,8 @@
-const os = require('os');
+const date = new Date('2023-05-20T08:56:51.253+00:00');
+console.log(date.getUTCHours());
+console.log(date.getUTCMinutes());
+console.log(date.getUTCSeconds());
 
-const checkIP = () => {
-  const interfaces = os.networkInterfaces();
-  const addresses = [];
-  for (const iface in interfaces) {
-    for (const address of interfaces[iface]) {
-      if (address.family === 'IPv4' && !address.internal) {
-        addresses.push(address.address);
-      }
-    }
-  }
-
-  // addresses[0];
-  return addresses[0];
-};
-
-console.log(checkIP());
+console.log(date.getHours());
+console.log(date.getMinutes());
+console.log(date.getSeconds());
