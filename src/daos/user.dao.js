@@ -44,6 +44,17 @@ const destroy = async (_id) => {
   return await User.findByIdAndDelete(_id);
 };
 
+/**
+ * Delete founded User By Emails
+ * @param {ObjectId} email - String
+ * @returns {ObjectId|null} - Deleted User or null if User not found
+ */
+const destroyByEmails = async (emails) => {
+  const users = await User.find({email: emails});
+  await User.deleteMany({email: emails});
+  return users
+};
+
 const update = async () => {
   await User.updateMany({}, { $set: { days: [] } });
 };
@@ -53,4 +64,4 @@ const findAll = async () => {
   return listEmail;
 };
 
-module.exports = { find, update, show, destroy, findAll };
+module.exports = { find, update, show, destroy, destroyByEmails, findAll };
