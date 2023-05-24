@@ -13,7 +13,7 @@ server {
 
 	location /user-checkin {
 
-		allow 172.24.0.1;
+		allow ${COMPANY_IP};
 		deny all;
 		
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -36,6 +36,6 @@ server {
 	}
 }
 
-log_format upstreamlog '[$time_local] $remote_addr - $remote_user - $server_name $host to: $upstream_addr: $request $status upstream_response_time $upstream_response_time msec $msec request_time $request_time';
+log_format upstreamlog '${COMPANY_IP} [$time_local] $remote_addr - $remote_user - $server_name $host to: $upstream_addr: $request $status upstream_response_time $upstream_response_time msec $msec request_time $request_time';
 
 access_log /var/log/nginx/access.log upstreamlog;
