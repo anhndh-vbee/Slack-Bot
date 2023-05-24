@@ -29,9 +29,24 @@ const readFileSync = (filePath) => {
     throw new CustomError(errorCodes.NOT_FOUND);
   }
 };
+
+const initializePublicForder = () => {
+  fs.access(publicDirecPath, (error) => {
+    if (error) {
+      fs.mkdir(publicDirecPath, (error) => {
+        if (err) {
+          console.error(error);
+        } else {
+          console.log('Thư mục public đã được tạo thành công!');
+        }
+      });
+    }
+  });
+}
 module.exports = {
   randomFilename,
   deleteFile,
   getFilePathByFilename,
   readFileSync,
+  initializePublicForder,
 };
