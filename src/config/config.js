@@ -11,5 +11,7 @@ const config = {
   URL_EXPRIDE_TIME: 1000 * 5 * 60,
   EMAIL: process.env.EMAIL,
   PASS_EMAIL: process.env.PASS_EMAIL,
+  ADMIN_ID: process.env.ADMIN_ID,
+  CHANNEL_ID: process.env.CHANNEL_ID,
 };
 module.exports = config;

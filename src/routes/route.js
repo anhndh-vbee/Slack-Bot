@@ -9,6 +9,7 @@ const asyncMiddleware = require('../middlewares/async.middleware');
 const { adminAuthorization } = require('../middlewares/auth.middleware');
 const handlerSlackTextMiddleware = require('../middlewares/handlerSlackText.middleware');
 
+router.post('/', userController.saveUserFromSlack);
 router.post('/checkin', userController.checkIn);
 router.get('/user-checkin/:token', userController.postCheckIn);
 
