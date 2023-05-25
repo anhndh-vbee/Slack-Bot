@@ -215,8 +215,8 @@ const infoPerMonth = async (req, res) => {
 };
 
 const destroy = async (req, res) => {
-  const { userId } = req.params;
-  const user = await userService.destroyUser(userId);
+  const { emails } = req.body;
+  const user = await userService.destroyUser(emails);
   res.status(200).send(user);
 };
 

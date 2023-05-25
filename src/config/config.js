@@ -8,7 +8,7 @@ const config = {
   SLACK_TOKEN: process.env.SLACK_TOKEN,
   BASE_URL: process.env.BASE_URL,
   IP: process.env.IP,
-  URL_EXPRIDE_TIME: 1000 * 5,
+  URL_EXPRIDE_TIME: 1000 * 5 * 60,
   EMAIL: process.env.EMAIL,
   PASS_EMAIL: process.env.PASS_EMAIL,
 };

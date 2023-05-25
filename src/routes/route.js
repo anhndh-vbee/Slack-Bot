@@ -21,7 +21,11 @@ router.post(
   handlerSlackTextMiddleware,
   asyncMiddleware(userController.infoPerMonth),
 );
-router.post('/users/:userId/destroy', asyncMiddleware(userController.destroy));
+router.post(
+  '/users/destroy',
+  handlerSlackTextMiddleware,
+  asyncMiddleware(userController.destroy),
+);
 router.post('/users', asyncMiddleware(userController.index));
 
 router.use('/dashboard', dashboardRoute);
