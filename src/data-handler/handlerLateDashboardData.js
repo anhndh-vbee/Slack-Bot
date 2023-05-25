@@ -1,8 +1,8 @@
 const { isValidCheckIn } = require('../utils/isValidCheckIn');
 
-const handlerLateDashboardData = (detail, days) => {
+const handlerLateDashboardData = (detail, days, listTime) => {
   // days = [[time, time], [time, time], ]
-  let result = [];
+  let result = listTime;
   days.forEach((element) => {
     const checkInTime = element[0];
     const checkOutTime = element[element.length - 1];
@@ -22,11 +22,11 @@ const handlerLateDashboardData = (detail, days) => {
         default:
           throw new Error('detail day not define');
       }
-      let obj = result.find((item) => item.time === time);
+      let obj = result.find((item) => item[0] === time);
       if (obj === undefined) {
-        result.push({ time, count: 1 });
+        result.push([time, 1 ]);
       } else {
-        obj.count++;
+        obj[1]++;
       }
     }
   });

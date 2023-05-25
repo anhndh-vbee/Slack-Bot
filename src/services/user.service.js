@@ -1,6 +1,8 @@
 const convertFilterToRegex = require('../utils/convertFilterToRegex');
 const userDao = require('../daos/user.dao');
-const { handlerTimekeepingData } = require('../data-handler/handlerTimekeepingData');
+const {
+  handlerTimekeepingData,
+} = require('../data-handler/handlerTimekeepingData');
 
 const findUser = async (conditions) => {
   const {
@@ -57,8 +59,8 @@ const findUsersInfoPerMonth = async (month, year, conditions) => {
   return { users, conditions: { sort, page, limit, filter: prefilter } };
 };
 
-const destroyUser = async (userId) => {
-  return await userDao.destroy(userId);
+const destroyUser = async (emails) => {
+  return await userDao.destroyByEmails(emails);;
 };
 module.exports = {
   findUser,

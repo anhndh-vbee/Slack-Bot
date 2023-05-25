@@ -2,6 +2,7 @@ const userDao = require('../daos/user.dao');
 const {
   handlerLateDashboardData,
 } = require('../data-handler/handlerLateDashboardData');
+const { getDatesOrMonthsInRange } = require('../utils/getDatesOrMonthsInRange');
 
 const lateCheckIn = async (conditions) => {
   const { startTime, endTime, detail } = conditions;
@@ -16,10 +17,10 @@ const lateCheckIn = async (conditions) => {
     );
     days = [...elementDays, ...days];
   });
-
-  const late = handlerLateDashboardData(detail, days);
+  let listTime = getDatesOrMonthsInRange(startTimeObject, endTimeObject, detail);
+  const late = handlerLateDashboardData(detail, days, listTime);
   const invalidCheckInTotal = late.reduce(
-    (accumulator, currentValue) => accumulator + currentValue.count,
+    (accumulator, currentValue) => accumulator + currentValue[1],
     0,
   );
   return { late, invalidCheckInTotal };
