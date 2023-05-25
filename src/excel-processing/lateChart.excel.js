@@ -33,8 +33,7 @@ const lateChartResponse = async (req, res, data) => {
   const worksheet = workbook.addWorksheet('Schedule');
 
   createHeaderRow(worksheet, data);
-  worksheet.eachRow(styleSheet);
-
+  
   // tạo file
   return await createFIleExcel(req, workbook);
 };
