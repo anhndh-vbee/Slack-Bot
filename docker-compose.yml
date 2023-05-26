@@ -35,6 +35,8 @@ services:
         mode: host
     depends_on:
       - nodejs 
+    volumes:
+      - /var/www/html:/var/www/html
     environment:
       - COMPANY_IP=172.24.0.1
     restart: unless-stopped

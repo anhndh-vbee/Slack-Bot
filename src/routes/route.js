@@ -9,26 +9,22 @@ const { adminAuthorization } = require('../middlewares/auth.middleware');
 const handlerSlackTextMiddleware = require('../middlewares/handlerSlackText.middleware');
 
 router.use(homeRoue);
+router.use(downloadRoute);
+
 router.post('/save', userController.saveUserFromSlack);
 router.post('/checkin', userController.checkIn);
 router.get('/user-checkin/:token', userController.postCheckIn);
-
 router.post('/user/schedule', userController.schedule);
-router.use(downloadRoute);
 
+// addmin role
 router.use(adminAuthorization);
 
-router.post(
-  '/users/timekeeping',
-  handlerSlackTextMiddleware,
-  asyncMiddleware(userController.infoPerMonth),
-);
-router.post(
-  '/users/destroy',
-  handlerSlackTextMiddleware,
-  asyncMiddleware(userController.destroy),
-);
 router.post('/users', asyncMiddleware(userController.index));
+
+// slack process minddleware
+router.use(handlerSlackTextMiddleware);
+router.post('/users/timekeeping', asyncMiddleware(userController.infoPerMonth));
+router.post('/users/destroy', asyncMiddleware(userController.destroy));
 router.use('/dashboard', dashboardRoute);
 
 module.exports = router;
