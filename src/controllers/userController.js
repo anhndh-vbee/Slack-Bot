@@ -98,7 +98,6 @@ const postCheckIn = async (req, res) => {
           const user = await User.findOne({ id: userId });
           const date = new Date();
           let check = true;
-          console.log(authController.checkIPv2(req, res));
           if (authController.checkIPv2(req, res) !== config.IP) {
             check = false;
             return res.status(200).send('Checkin failed');

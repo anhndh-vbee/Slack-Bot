@@ -34,7 +34,7 @@ const initializePublicForder = () => {
   fs.access(publicDirecPath, (error) => {
     if (error) {
       fs.mkdir(publicDirecPath, (error) => {
-        if (err) {
+        if (error) {
           console.error(error);
         } else {
           console.log('Thư mục public đã được tạo thành công!');
