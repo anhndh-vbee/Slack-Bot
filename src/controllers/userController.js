@@ -48,7 +48,7 @@ const saveUserFromSlack = async (req, res) => {
       id: userInfo?.user.id,
       team_id: userInfo?.user.team_id,
       name: userInfo?.user.real_name,
-      role: userInfo?.user.is_admin === true ? 'Admin' : 'User',
+      role: userInfo?.user.is_admin === true ? 'admin' : 'user',
       email: userInfo?.user?.profile.email,
     });
     // const saveUser = await newUser.save();
@@ -98,10 +98,10 @@ const postCheckIn = async (req, res) => {
           const user = await User.findOne({ id: userId });
           const date = new Date();
           let check = true;
-          if (authController.checkIPv2(req, res) !== config.IP) {
-            check = false;
-            return res.status(200).send('Checkin failed');
-          }
+          // if (authController.checkIPv2(req, res) !== config.IP) {
+          //   check = false;
+          //   return res.status(200).send('Checkin failed');
+          // }
 
           if (check === true) {
             let listCheckInTime = [];
@@ -182,9 +182,6 @@ const schedule = async (req, res) => {
   try {
     const { user_id, text } = req.body;
     const user = await User.findOne({ id: user_id });
-    if (user.schedules !== []) {
-      return res.status(200).send('You have registerd');
-    }
     const listDay = text.split(' ');
     let scheduleDay = [];
     listDay.forEach((day) => {
@@ -192,10 +189,10 @@ const schedule = async (req, res) => {
         day: dateService.getDayOfWeek(day[0]),
         time:
           day[1].toLowerCase() === 's'
-            ? 'Morning'
+            ? 'morning'
             : day[1].toLowerCase() === 'c'
-            ? 'Afternoon'
-            : 'Full',
+            ? 'afternoon'
+            : 'full',
       });
     });
     user.schedules = scheduleDay;

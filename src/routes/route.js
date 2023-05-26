@@ -9,7 +9,7 @@ const { adminAuthorization } = require('../middlewares/auth.middleware');
 const handlerSlackTextMiddleware = require('../middlewares/handlerSlackText.middleware');
 
 router.use(homeRoue);
-router.post('/', userController.saveUserFromSlack);
+router.post('/save', userController.saveUserFromSlack);
 router.post('/checkin', userController.checkIn);
 router.get('/user-checkin/:token', userController.postCheckIn);
 
