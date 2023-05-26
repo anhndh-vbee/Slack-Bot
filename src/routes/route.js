@@ -14,6 +14,7 @@ router.post('/checkin', userController.checkIn);
 router.get('/user-checkin/:token', userController.postCheckIn);
 
 router.post('/user/schedule', userController.schedule);
+router.use(downloadRoute);
 
 router.use(adminAuthorization);
 
@@ -29,6 +30,5 @@ router.post(
 );
 router.post('/users', asyncMiddleware(userController.index));
 router.use('/dashboard', dashboardRoute);
-router.use(downloadRoute);
 
 module.exports = router;
