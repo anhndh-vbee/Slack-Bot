@@ -13,13 +13,14 @@ const getDetailDay = (dateString) => {
 const getDayOfWeek = (number) => {
   const daysOfWeek = [
     'saturday',
+    'sunday',
     'monday',
     'tuesday',
     'wednesday',
     'thursday',
     'friday',
   ];
-  const dayIndex = (number % 6) - 1;
+  const dayIndex = number % 7;
   return daysOfWeek[dayIndex];
 };
 

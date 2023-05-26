@@ -4,8 +4,8 @@ const errorCodes = require('../errors/code');
 const asyncMiddleware = require('./async.middleware');
 
 const adminAuthorization = async (req, res, next) => {
-  const { userId } = req.body;
-  const user = await authService.verify(userId);
+  const { user_id } = req.body;
+  const user = await authService.verify(user_id);
   if (user.role !== 'admin') throw new CustomError(errorCodes.FORBIDDEN);
   return next();
 };
