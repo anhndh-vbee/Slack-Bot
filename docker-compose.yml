@@ -6,21 +6,21 @@ services:
     image: nodejs
     ports:
       - '3000:3000'
-    depends_on:
-      - mongo
+    # depends_on:
+    #   - mongo
     environment:
-      # MONGODB_URL: mongodb+srv://0606bach:d2XUdXtmQXbZYyOI@cluster0.vc1gtc4.mongodb.net/checkin
-      MONGODB_URL: mongodb://mongo:27017/checkin
+      MONGODB_URL: mongodb+srv://hoanganhbadaotx:hoanganhdragontx01@cluster0.f6nnqhj.mongodb.net/?retryWrites=true&w=majority
+      # MONGODB_URL: mongodb://mongo:27017/checkin
     networks:
       - my-network
-  mongo:
-    image: mongo
-    networks:
-      - my-network     
-    ports:
-    - '27017:27017'
-    volumes:
-    - /data/db:/data/db
+  # mongo:
+  #   image: mongo
+  #   networks:
+  #     - my-network     
+  #   ports:
+  #   - '27017:27017'
+  #   volumes:
+  #   - /data/db:/data/db
   nginx:
     build: 
       dockerfile: Dockerfile
