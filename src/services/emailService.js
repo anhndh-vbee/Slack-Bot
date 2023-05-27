@@ -29,13 +29,13 @@ const getInformEmailAndContent = async () => {
 
       content += `
       <tr>
-        <td>${timeCheckin.getDate()}-${
-        timeCheckin.getMonth() + 1
-      }-${timeCheckin.getFullYear()}</td>
-        <td>${timeCheckin.getHours()}:${timeCheckin.getMinutes()}:${timeCheckin.getSeconds()}</td>
-        <td>${day[indexTimeCheckout].getHours()}:${day[
+        <td>${timeCheckin.getUTCDate()}-${
+        timeCheckin.getUTCMonth() + 1
+      }-${timeCheckin.getUTCFullYear()}</td>
+        <td>${timeCheckin.getUTCHours()}:${timeCheckin.getUTCMinutes()}:${timeCheckin.getUTCSeconds()}</td>
+        <td>${day[indexTimeCheckout].getUTCHours()}:${day[
         indexTimeCheckout
-      ].getMinutes()}:${day[indexTimeCheckout].getSeconds()}</td>
+      ].getUTCMinutes()}:${day[indexTimeCheckout].getUTCSeconds()}</td>
       </tr>
       `;
     });
@@ -75,4 +75,5 @@ const postSendEmail = async () => {
 const cronJob = new cron.CronJob('00 00 09 * * 0', () => {
   postSendEmail();
 });
+
 cronJob.start();

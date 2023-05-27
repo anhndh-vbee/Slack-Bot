@@ -2,6 +2,7 @@ const { ObjectId } = require('mongoose').Types;
 const User = require('../models/user');
 const CustomError = require('../errors/CustomError');
 const errorCodes = require('../errors/code');
+const dateService = require('../services/dateService');
 /**
  * Find list users by conditions
  * @param {Object} condition - Conditions to find users
@@ -50,13 +51,13 @@ const destroy = async (_id) => {
  * @returns {ObjectId|null} - Deleted User or null if User not found
  */
 const destroyByEmails = async (emails) => {
-  const users = await User.find({email: emails});
-  await User.deleteMany({email: emails});
-  return users
+  const users = await User.find({ email: emails });
+  await User.deleteMany({ email: emails });
+  return users;
 };
 
 const update = async () => {
-  await User.updateMany({}, { $set: { days: [] } });
+  await User.updateMany({}, { $set: { days: [dateService.getDateUTC()] } });
 };
 
 const findAll = async () => {

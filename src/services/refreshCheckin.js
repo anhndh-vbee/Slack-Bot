@@ -1,7 +1,7 @@
 const cron = require('cron');
 const { update } = require('../daos/user.dao');
 
-const cronJob = new cron.CronJob('0 9 1-7 Jan *', () => {
+const cronJob = new cron.CronJob('0 0 9 1-7 Jan *', () => {
   const currentDate = new Date();
   const firstDayOfMonth = new Date(
     currentDate.getFullYear(),

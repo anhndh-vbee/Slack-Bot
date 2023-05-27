@@ -96,12 +96,15 @@ const postCheckIn = async (req, res) => {
         } else {
           const userId = userData?.data?.id;
           const user = await User.findOne({ id: userId });
-          const date = new Date();
+          const date = dateService.getDateUTC();
           let check = true;
-          // if (authController.checkIPv2(req, res) !== config.IP) {
-          //   check = false;
-          //   return res.status(200).send('Checkin failed');
-          // }
+
+          // off this code to prevent checkip
+          if (authController.checkIPv2(req, res) !== config.IP) {
+            check = false;
+            return res.status(200).send('Checkin failed');
+          }
+          //
 
           if (check === true) {
             let listCheckInTime = [];
@@ -129,8 +132,7 @@ const postCheckIn = async (req, res) => {
             const len = informCheckin.length;
             let dayCheckinOfMonth = informCheckin.filter(
               (day) =>
-                dateService.getWeek(day[0]) ===
-                dateService.getWeek(informCheckin[len - 1][0]),
+                day[0].getMonth() === informCheckin[len - 1][0].getMonth(),
             );
 
             let contentCheckinThisMonth = `
@@ -144,13 +146,11 @@ const postCheckIn = async (req, res) => {
               contentCheckinThisMonth += `
               <br/>
               <tr>
-                <td>${timeCheckin.getDate()}-${
-                timeCheckin.getMonth() + 1
-              }-${timeCheckin.getFullYear()}</td>
-                <td>${
-                  timeCheckin.getUTCHours() + 7
-                }:${timeCheckin.getUTCMinutes()}:${timeCheckin.getUTCSeconds()}</td>
-                <td>${day[indexTimeCheckout].getUTCHours() + 7}:${day[
+                <td>${timeCheckin.getUTCDate()}-${
+                timeCheckin.getUTCMonth() + 1
+              }-${timeCheckin.getUTCFullYear()}</td>
+                <td>${timeCheckin.getUTCHours()}:${timeCheckin.getUTCMinutes()}:${timeCheckin.getUTCSeconds()}</td>
+                <td>${day[indexTimeCheckout].getUTCHours()}:${day[
                 indexTimeCheckout
               ].getUTCMinutes()}:${day[indexTimeCheckout].getUTCSeconds()}</td>
               </tr>
