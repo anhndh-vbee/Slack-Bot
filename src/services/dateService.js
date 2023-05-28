@@ -1,13 +1,10 @@
-// dateString: d-m-y
-const getDetailDay = (dateString) => {
-  const dateParts = dateString.split('-');
-  const year = parseInt(dateParts[2]);
-  const month = parseInt(dateParts[1]) - 1; // Months are zero-indexed, so subtract 1
-  const day = parseInt(dateParts[0]);
-  const date = new Date(year, month, day);
-  const options = { weekday: 'long' };
-  const dayOfWeek = date.toLocaleDateString('en-US', options);
-  return dayOfWeek;
+// get date in UTC+7
+const getDateUTC = () => {
+  const now = new Date();
+  const gmtOffset = 7 * 60 * 60 * 1000; // Offset in milliseconds
+  const targetTime = now.getTime() + gmtOffset;
+  const targetDate = new Date(targetTime);
+  return targetDate;
 };
 
 const getDayOfWeek = (number) => {
@@ -31,4 +28,4 @@ function getWeek(date) {
   return Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
 }
 
-module.exports = { getDetailDay, getDayOfWeek, getWeek };
+module.exports = { getDateUTC, getDayOfWeek, getWeek };

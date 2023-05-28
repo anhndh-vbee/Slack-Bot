@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { getDateUTC } = require('../services/dateService');
 
 const userSchema = new mongoose.Schema(
   {
@@ -18,7 +19,7 @@ const userSchema = new mongoose.Schema(
     },
     days: {
       type: [Array],
-      default: [[new Date()]],
+      default: [[getDateUTC()]],
     },
     schedules: {
       type: [
